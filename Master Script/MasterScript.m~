@@ -1,17 +1,14 @@
 %{
-    EAD automatic HRIR capture, equalisation and sofa file production
-    script
+    HRIR_MEASURMENT_V2
 
-    NOTE: Can not use DIR() to load audio files, must use direct file path!
+    New scripts for HRIR measurement and SOFA file production.
 
+    Previous Scripts: Equalises HRTFs using the free field response of the
+    binaural microhpones and Genelec speakers in the rig
 
-    NOTE: Top file should no longer be Documents/MATLAB. To avoid conflict
-    with other scripts, have all required scripts in your personal top
-    folder.
-
-    All audio is recorded at 48000. Change fs to output all files at the
-    desired sample rate. They will be converted at the deconvole stage
-    (after deconvolution).
+    New Scripts: Equalises the HRTFs using free field responses of the
+    microhpones taken in an anechoic environment with an equalised Genelec
+    speaker. This keeps the ta
     
 
 %}
