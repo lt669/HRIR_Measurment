@@ -34,12 +34,15 @@ function [ sweep, inverse_filter ] = generatesweep(path, freq_lower, freq_upper,
         
         % Create padding
         padding = zeros(1,padlength*Fs);
+        burst = zeros(1,11);
         
         % Add a HF burst 1 second before the start of the sweep (for sync)
-        padding(((padlength-1)*Fs)+1:((padlength-1)*Fs)+11) = [0,0.1,-0.1,0.1,-0.1,0.1,-0.1,0.1,-0.1,0.1,-0.1];
+%         padding(((padlength-1)*Fs)+1:((padlength-1)*Fs)+11) = [0,0.1,-0.1,0.1,-0.1,0.1,-0.1,0.1,-0.1,0.1,-0.1];
+        burst(Fs:Fs+10) = [0,0.5,-0.5,0.5,-0.5,0.5,-0.5,0.5,-0.5,0.5,-0.5];
+        
         
         % Add the padding to the front of the sweep, and 3s after it
-        sweep = [padding, sweep, zeros(1,3*Fs)];
+        sweep = [burst, padding, sweep, zeros(1,10*Fs)];
         
     end
     

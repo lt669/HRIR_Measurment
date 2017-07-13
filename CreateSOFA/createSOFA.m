@@ -11,21 +11,10 @@ function[] = createSOFA(projectName,subjectNumber,fileLength,fs,bit,FIR_compress
     % Variable for FS folder name as a string
     fsFolder = int2str(round(fs/1000));
     
-for h=1:2
-    disp(h);
-    if h==1
-        sofaFileSource = strcat('Audio/',projectName,'/HRIR_Trim/');
-        extension = '_Raw.wav';
-        sofaOutputFile = strcat('Audio/',projectName,'/SOFAFiles/SOFA_RAW/');
-    elseif h==2
-        sofaFileSource = strcat('Audio/',projectName,'/HRIR_FFEQ/');
-        extension = '_FFC.wav';
-        sofaOutputFile = strcat('Audio/',projectName,'/SOFAFiles/SOFA_FFEQ/');
-    elseif h==3    
-        sofaFileSource = strcat('Audio/',projectName,'/HRIR_DFFEQ/');
-        extension = '_DFFC.wav';
-        sofaOutputFile =  strcat('Audio/',projectName,'/SOFAFiles/HRIR_DFFEQ/');
-    end
+
+    sofaFileSource = strcat('Audio/',projectName,'/HRIR_Trim/');
+    extension = '_Raw.wav';
+    sofaOutputFile = strcat('Audio/',projectName,'/SOFAFiles/SOFA_RAW/');
     
     % These are the co-ordinates for a 50ch Lebedev grid
     %NOTE: Positive azimuth angles here correspond to negative angles in max (spat)
@@ -37,7 +26,6 @@ for h=1:2
     %N=256;
     N = fileLength;
     hrirs = zeros(M,N,2); % Initialise HRIR array
-
 
     for i = 1:M
         fileloadname = strcat('',sofaFileSource,'',subjectNumber,'/',fsFolder,'/azi_', int2str(azimuth(i)), '_ele_', int2str(elevation(i)), '',extension);
@@ -125,7 +113,6 @@ for h=1:2
     %% Check SOFA file is created correctly
 
     ObjTest = SOFAload(outfilename);
-end
 end
 
 

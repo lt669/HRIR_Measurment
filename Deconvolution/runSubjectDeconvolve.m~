@@ -119,42 +119,36 @@ function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLengt
     end
     
     firstPeak = minSort(1);
-    trimStart = round((firstPeak*fs) - (0.0005*fs));
+    trimStart = round((firstPeak*fs) - (0.001*fs));
 
-%     % Find first none zero value and start file there
-%     for n = 1:length(subjectDir)
-%         left = decNorm(k,:,1);
-%         leftN = decNorm(k,:,1);
-%         right= decNorm(k,:,2);
-%         
-%         % Normalise for easy direct sound peak detection
-%         left = left/max(abs(left));
-%         right = right/max(abs(right));
-%         
-%         loc1 = findNonZero(left);
-%         loc2 = findNonZero(right);       
-%         
-%         % Store Left and Right peak locations
-%         loc(1) = loc1;
-%         loc(2) = loc2;
-%         
-%         % Find the minimum of the two
-%         minSort(2) = min(loc);
-%         
-%         % If the current minimum is smaller than the previous
-%         % replace it.
-%         if minSort(2) < minSort(1)
-%             minSort(1) = minSort(2);
-%         end
-%         disp(sprintf('minLoc: %d',minSort(2)));
-%         
-%     end
-%     disp(subjectDir(50).name);
-%     disp(leftN(1:50));
-%     
-% 
-%     trimStart = minSort(1);
-%     
+    % Find first none zero value and start file there
+    for n = 1:length(subjectDir)
+        left = decNorm(k,:,1);
+        right= decNorm(k,:,2);
+
+        % Normalise for easy direct sound peak detection
+        left = left/max(abs(left));
+        right = right/max(abs(right));
+        
+        loc1 = findNonZero(left);
+        loc2 = findNonZero(right);
+        
+        % Store Left and Right peak locations
+        loc(1) = loc1;
+        loc(2) = loc2;
+        
+        % Find the minimum of the two
+        minSort(2) = min(loc);
+        
+        % If the current minimum is smaller than the previous
+        % replace it.
+        if minSort(2) < minSort(1)
+            minSort(1) = minSort(2);
+        end
+
+    end
+    
+    
     for n = 1:length(subjectDir)
 
         % Write Raw HRIR
@@ -178,7 +172,6 @@ function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLengt
           if(file(samp) > 0)
               nonZero = samp;
               break;
-          end
        end
     end
     
