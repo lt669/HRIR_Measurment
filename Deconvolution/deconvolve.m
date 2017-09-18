@@ -1,4 +1,4 @@
-function [ IR ] = deconvolve( inverse_filter, recording)
+function [ IR ] = deconvolve( inverse_filter, recording,norm)
 % DECONVOLVES Calculates the impulse response of a system using its output and
 % the inverse filter of the excitation signal
 
@@ -22,9 +22,11 @@ function [ IR ] = deconvolve( inverse_filter, recording)
     N = length(recording) + length(inverse_filter);
     IR = ifft( (fft(recording,N)).*fft(inverse_filter,N));
 
-    % Normalise across all channels (REMOVED FOR MASS NORMALISATION)
-    IR = IR/max(max(abs(IR)));
-    
+    if norm==1
+        disp('[Deconvolve]: Normalising');
+        % Normalise across all channels (REMOVED FOR MASS NORMALISATION)
+        IR = IR/max(max(abs(IR)));
+    end
     % Trim the data (remove silence equal to the sweep - or filter - length)
     IR = IR( length(inverse_filter)+1:end,:);
 

@@ -21,6 +21,6 @@ Azout = int2str(Azout);
 Elout = int2str(Elout);
 
 outputName = cellstr(strcat('azi_',Azout,'_ele_',Elout));
-disp(sprintf('findName: outputName = %s',char(outputName)));
+%disp(sprintf('findName: outputName = %s',char(outputName)));
 
 end

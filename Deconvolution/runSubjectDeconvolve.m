@@ -11,7 +11,7 @@
 
 %}
 
-function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLength,fs,bits)
+function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLength,fs,bits,microphones)
 
     disp('--- Running Subject Deconvolve Script ---');
     
@@ -55,8 +55,9 @@ function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLengt
     disp(sprintf('Saving Trimmed HRIRs to:Audio/%s/HRIR_Trim/%s',projectName,subjectName));
     disp(sprintf('length(subjectDir) = %d',length(subjectDir)));
 
-    % ---------- Triming & Deconvolution ----------%
-    %==============================================%
+    
+    %=============--------- DECONVOLUTION
+    
     for k = 1:length(subjectDir)
 
         file = sprintf('%s/%s',subjectSweepsPath,subjectDir(k).name);
@@ -81,11 +82,49 @@ function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLengt
         end
 
         % Deconvolve
-        dec(k,:,:) = deconvolve(inv,sweep);
+        dec(k,:,:) = deconvolve(inv,sweep,0);
     end
+    
+    %=============--------- Convolve with Microphone Inverse IR
+    
+    %Check if binaural mics were used (not the case using KU_100)
+    if microphones ~= 'n'
 
-    % Normalise all HRIRs with respoect to each other
-    decNorm = normHRIR(dec);
+        leftMicName = strcat('',microphones{:,1},'_Anechoic_InvFilter_1.wav');
+        rightMicName = strcat('',microphones{:,2},'_Anechoic_InvFilter_1.wav');
+
+        % Load binaural mic inv IR
+        leftMic = audioread(strcat('Audio/GlobalAudio/Microphone_EQ/Microphones/InverseFilters/',leftMicName));
+        rightMic = audioread(strcat('Audio/GlobalAudio/Microphone_EQ/Microphones/InverseFilters/',rightMicName));
+
+        % Convolve with HRTFs
+        for k = 1:50
+            decMicEQ(k,:,1) = conv(dec(k,:,1),leftMic);
+            decMicEQ(k,:,2) = conv(dec(k,:,2),rightMic);
+        end
+        
+        % Normalise all HRIRs with respect to each other
+        decNorm = normHRIR(decMicEQ);
+    else
+        decNorm = dec;
+    end        
+    
+    %=============--------- TRIMMING
+    
+    % Find name of file with max value
+    maxVal(1) = 0; 
+    for k=1:50
+        x(:,1) = decNorm(k,:,1);
+        x(:,2) = decNorm(k,:,2);
+        maxVal(2) = max(max(abs(x)));
+        if(maxVal(2) > maxVal(1))
+            maxVal(1) = maxVal(2);
+            index = k;
+            disp(k);
+        end
+    end
+    disp(strcat('Max: ',subjectDir(index).name));
+    disp(sprintf('Value(%i): %i',index,maxVal(1)));
     
     % Initial reference value
     minSort(1) = 1000;
@@ -120,41 +159,9 @@ function [decStereoOut] = runSubjectDeconvolve(projectName,subjectName,fileLengt
     
     firstPeak = minSort(1);
     trimStart = round((firstPeak*fs) - (0.0005*fs));
-
-%     % Find first none zero value and start file there
-%     for n = 1:length(subjectDir)
-%         left = decNorm(k,:,1);
-%         leftN = decNorm(k,:,1);
-%         right= decNorm(k,:,2);
-%         
-%         % Normalise for easy direct sound peak detection
-%         left = left/max(abs(left));
-%         right = right/max(abs(right));
-%         
-%         loc1 = findNonZero(left);
-%         loc2 = findNonZero(right);       
-%         
-%         % Store Left and Right peak locations
-%         loc(1) = loc1;
-%         loc(2) = loc2;
-%         
-%         % Find the minimum of the two
-%         minSort(2) = min(loc);
-%         
-%         % If the current minimum is smaller than the previous
-%         % replace it.
-%         if minSort(2) < minSort(1)
-%             minSort(1) = minSort(2);
-%         end
-%         disp(sprintf('minLoc: %d',minSort(2)));
-%         
-%     end
-%     disp(subjectDir(50).name);
-%     disp(leftN(1:50));
-%     
-% 
-%     trimStart = minSort(1);
-%     
+    
+    %=============--------- OUTPUT FILES
+    
     for n = 1:length(subjectDir)
 
         % Write Raw HRIR

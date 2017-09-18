@@ -17,7 +17,6 @@ function [] = Headphone_Deconvolution(projectName,subjectName,fileLength,fs,bits
         error(sprintf('The Folder... \n\n %s \n\n ...does not exists. Have you selected the correct sampling rate?',headphoneSweep));
     end
     
-    
     %Load inverse sweep
     if fsFolder=='48'
         inv = audioread('Audio/GlobalAudio/Sweeps/InvSweep_20to22050_48000_Pad0s.wav');
@@ -35,9 +34,9 @@ function [] = Headphone_Deconvolution(projectName,subjectName,fileLength,fs,bits
     
     % Load in sweeps
     for k = 1:length(headphoneSweepDir)
-       file(:,:) = audioread(strcat('',headphoneSweep,'/',headphoneSweepDir(k).name));
-       fftLeft(:,k) = fft(file(:,1),nfft);
-       fftRight(:,k) = fft(file(:,2),nfft);
+       hpSweep(:,:) = audioread(strcat('',headphoneSweep,'/',headphoneSweepDir(k).name));
+       fftLeft(:,k) = fft(hpSweep(:,1),nfft);
+       fftRight(:,k) = fft(hpSweep(:,2),nfft);
     end
     
     % Calculate power average frequency response
@@ -132,23 +131,23 @@ function [] = Headphone_Deconvolution(projectName,subjectName,fileLength,fs,bits
         %==============================%
         if(isTrue == 1)
             % Plot sweeps
-                ax(1) = subplot(4,1,1); plot(file(:,1,1));
+                ax(1) = subplot(4,1,1); plot(hpSweep(:,1,1));
                 ax(2) = subplot(4,1,2); plot(headphoneSweepAverage(:,1));
                 linkaxes(ax,'xy');
 
             % Plot Frequency Responses
 
                 % Frequency Vector
-                freq = 0:fs/length(file(:,1,1)):fs/2;
+                freq = 0:fs/length(hpSweep(:,1,1)):fs/2;
 
                 % Take abs values of FT of the first sweep for plotting and plot on Log
-                fftLeftPlotTemp(:,1) = fft(file(:,1,1),nfft);
-                fftLeftPlot(:,1) = fftLeftPlotTemp(1:round(length(file(:,1,1))/2,1));
+                fftLeftPlotTemp(:,1) = fft(hpSweep(:,1,1),nfft);
+                fftLeftPlot(:,1) = fftLeftPlotTemp(1:round(length(hpSweep(:,1,1))/2,1));
                 fftLeftPlot(:,1) = 20*log10(abs(fftLeftPlot(:,1)));
                 subplot(4,1,3); semilogx(freq(1:length(fftLeftPlot(:,1))),fftLeftPlot(:,1));
 
                 fftLeftAverageTemp = fftLeftAverage;
-                fftLeftAverage = fftLeftAverageTemp(1:round(length(file(:,1,1))/2,1));
+                fftLeftAverage = fftLeftAverageTemp(1:round(length(hpSweep(:,1,1))/2,1));
                 fftLeftAverage = 20*log10(abs(fftLeftAverage));
                 subplot(4,1,4); semilogx(freq(1:length(fftLeftAverage)),fftLeftAverage);
         end

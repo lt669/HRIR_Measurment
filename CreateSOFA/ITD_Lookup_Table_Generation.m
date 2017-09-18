@@ -7,7 +7,7 @@ function [] = ITD_Lookup_Table_Generation(projectName,subjectName,fs)
     
     % ---LOAD FILE PATHS--- %
 
-    hrirPath = strcat('Audio/',projectName,'/HRIR_Trim/',subjectName,'/',fsFolder);
+    hrirPath = strcat('Audio/Projects/',projectName,'/HRIR_Trim/',subjectName,'/',fsFolder);
     hrirDirectory = dir(sprintf('%s/*.wav',hrirPath));
 
     % --------------------- %
@@ -34,8 +34,8 @@ function [] = ITD_Lookup_Table_Generation(projectName,subjectName,fs)
         itd = finddelay(left,right,maxLag);
         itd_out(k,3) = (itd/fs)*10^3;
 
-        itd_out_filepath = strcat('Audio/',projectName,'/SOFAFiles/lookUpTables/');
-        
+        itd_out_filepath = strcat('Audio/Projects/',projectName,'/SOFAFiles/lookUpTables');
+        disp(strcat('ITD: ',itd_out_filepath));
         if 0==exist(itd_out_filepath,'file')
             disp('Creating File...');
             disp(itd_out_filepath);
@@ -50,16 +50,16 @@ function [] = ITD_Lookup_Table_Generation(projectName,subjectName,fs)
         
     end
     
-    plotOut(1) = itd_out(3,3);
-    plotOut(2) = itd_out(43,3);
-    plotOut(3) = itd_out(49,3);
-    plotOut(4) = itd_out(10,3);
-    plotOut(5) = itd_out(16,3);
-    plotOut(6) = itd_out(24,3);
-    plotOut(7) = itd_out(30,3);
-    plotOut(8) = itd_out(36,3);
-    plotOut(8) = itd_out(3,3);
-        disp('Plotting ITD...');
+%     plotOut(1) = itd_out(3,3);
+%     plotOut(2) = itd_out(43,3);
+%     plotOut(3) = itd_out(49,3);
+%     plotOut(4) = itd_out(10,3);
+%     plotOut(5) = itd_out(16,3);
+%     plotOut(6) = itd_out(24,3);
+%     plotOut(7) = itd_out(30,3);
+%     plotOut(8) = itd_out(36,3);
+%     plotOut(8) = itd_out(3,3);
+%         disp('Plotting ITD...');
         % Plot ITD
        % plot(plotOut);
     
@@ -71,6 +71,9 @@ function [] = ITD_Lookup_Table_Generation(projectName,subjectName,fs)
         azi = str2num(azi);
         ele = str2num(ele);
         
+        
+        
     end
-
+disp('');    
+disp('---Exiting IDT_Lookup_Table_Generation---');
 end

@@ -5,11 +5,13 @@
 function [normalised] = normHRIR(input)
 
     [n,m,p] = size(input);
+    disp(sprintf('\n'));
     disp('--- normHRIR ---');
     disp(sprintf('Size: n=%d m=%d p=%d',n,m,p));
     
     % Find maximum value
     maximum = max(max(max(abs(input))));
+    disp(sprintf('maximum: %d',maximum));
     
     % Apply Normalisation
     normalised = input/maximum;
@@ -21,4 +23,6 @@ function [normalised] = normHRIR(input)
     
     disp(sprintf('maximumNorm: %d',maximumNorm));
     disp('--- normHRIR Exit---');
+    disp(sprintf('\n'));
+    
 end
